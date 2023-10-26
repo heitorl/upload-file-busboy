@@ -22,8 +22,10 @@ const routes = new Routes(io);
 app.options("/", routes.options);
 app.post("/", (request, response) => routes.post(request, response));
 
+app.get("/", (request, response) => routes.get(request, response));
+
 const PORT = 3000;
 server.listen(PORT, () => {
   const { address, port } = server.address();
-  logger.info(`App running at http://${address}:${port}`);
+  logger.info(`App running at http://localhost:${port}`);
 });

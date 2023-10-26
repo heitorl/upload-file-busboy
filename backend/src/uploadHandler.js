@@ -6,6 +6,7 @@ import {
 } from "./util.js";
 import path, { dirname, join } from "path";
 import { createWriteStream, existsSync, fsync, mkdirSync } from "fs";
+import { s3Upload } from "./serviceS3.js";
 
 const FILE_EVENT_NAME = "file-uploaded";
 
@@ -43,15 +44,13 @@ export class UploadHandler {
 
   async onFile(fieldname, file, filename) {
     const uniqueFileName = generateUniqueFileNameWithPrefix(filename);
-    console.log(uniqueFileName);
 
     const currentDir = new URL(import.meta.url).pathname;
     const saveTo = join(currentDir, "../", "downloads", uniqueFileName);
-
-    console.log("saveTo", saveTo);
     const saveDir = dirname(saveTo);
+    console.log(filename);
 
-    console.log("saveDir", saveDir);
+    await s3Upload(file, `uploads`, filename);
 
     logger.info("Uploading: " + saveTo);
     await pipelineAsync(
