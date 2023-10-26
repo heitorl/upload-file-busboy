@@ -1,5 +1,9 @@
 import Busboy from "busboy";
-import { logger, pipelineAsync } from "./util.js";
+import {
+  generateUniqueFileNameWithPrefix,
+  logger,
+  pipelineAsync,
+} from "./util.js";
 import path, { dirname, join } from "path";
 import { createWriteStream, existsSync, fsync, mkdirSync } from "fs";
 
@@ -38,10 +42,11 @@ export class UploadHandler {
   }
 
   async onFile(fieldname, file, filename) {
-    // const saveTo = path.join(__dirname, "../", "downloads", filename);
+    const uniqueFileName = generateUniqueFileNameWithPrefix(filename);
+    console.log(uniqueFileName);
 
     const currentDir = new URL(import.meta.url).pathname;
-    const saveTo = join(currentDir, "../", "downloads", filename);
+    const saveTo = join(currentDir, "../", "downloads", uniqueFileName);
 
     console.log("saveTo", saveTo);
     const saveDir = dirname(saveTo);
@@ -51,7 +56,7 @@ export class UploadHandler {
     logger.info("Uploading: " + saveTo);
     await pipelineAsync(
       file,
-      this.handleFileBytes.apply(this, [filename]),
+      this.handleFileBytes.apply(this, [uniqueFileName]),
       createWriteStream(saveTo)
     );
 
