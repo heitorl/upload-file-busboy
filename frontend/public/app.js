@@ -3,6 +3,13 @@ let bytesAmount = 0;
 const API_URL = "http://localhost:3000";
 const ON_UPLOAD_EVENT = "file-uploaded";
 
+const worker = new Worker("worker/worker.js", {
+  type: "module",
+});
+
+worker.onload = () => worker.postMessage("Mensagem do app para o worker");
+// Agora que o Worker está pronto, você pode enviar mensagens para ele
+
 function formatBytes(bytes, decimals = 2) {
   if (bytes === 0) return "0 Bytes";
 
@@ -26,6 +33,8 @@ const showSize = () => {
   if (!fileElements.length) return;
 
   const files = Array.from(fileElements);
+
+  worker.postMessage({ files });
 
   const { size } = files.reduce(
     (prev, next) => ({ size: prev.size + next.size }),
@@ -73,14 +82,25 @@ const showMessage = () => {
 const onload = () => {
   showMessage();
 
+  // mp4box.onReady = function (info) {
+  //   console.log("Método onReady chamado");
+  //   console.log(info);
+  // };
+
   const ioClient = io.connect(API_URL, { withCredentials: false });
   ioClient.on("connect", (msg) => {
-    console.log("connected!", ioClient.id);
+    console.log("connected!5", ioClient.id);
     const targetUrl = API_URL + `?socketId=${ioClient.id}`;
     configureForm(targetUrl);
   });
 
   ioClient.on(ON_UPLOAD_EVENT, (bytesReceived) => {
+    const { files: fileElements } = document.getElementById("file");
+    console.log("RECEBIDO 3.0");
+    // const files = Array.from(fileElements);
+
+    // worker.postMessage({ files });
+
     console.log("received", bytesReceived);
     bytesAmount = bytesAmount - bytesReceived;
     updateStatus(bytesAmount);
