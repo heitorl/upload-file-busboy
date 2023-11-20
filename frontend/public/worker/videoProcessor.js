@@ -32,21 +32,19 @@ export default class VideoProcessor {
           /**@param {EncodedVideoChunk} */
           onChunk(chunk) {
             decoder.decode(chunk);
-            debugger;
           },
         });
       },
     });
   }
 
-  async start({ file, encoderConfig }) {
+  async start({ file, encoderConfig, renderFrame, sendMessage }) {
     const stream = file.stream();
-    console.log(file, "fileee");
-    // const fileName = file[0].replace(".mp4", "");
     await this.mp4Decoder(encoderConfig, stream).pipeTo(
       new WritableStream({
         write(frame) {
           //obtendo cada frame do video
+          renderFrame(frame);
         },
       })
     );

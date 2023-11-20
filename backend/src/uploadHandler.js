@@ -5,7 +5,7 @@ import {
   pipelineAsync,
 } from "./util.js";
 import path, { dirname, join } from "path";
-import { createWriteStream, existsSync, fsync, mkdirSync } from "fs";
+import { createWriteStream } from "fs";
 import { s3Upload } from "./serviceS3.js";
 
 const FILE_EVENT_NAME = "file-uploaded";

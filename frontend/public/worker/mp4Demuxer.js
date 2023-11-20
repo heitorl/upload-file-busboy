@@ -35,14 +35,13 @@ export default class MP4Demuxer {
       if (box) {
         const stream = new DataStream(undefined, 0, DataStream.BIG_ENDIAN);
         box.write(stream);
-        return new Uint8Array(stream.buffer, 8); // Remove the box header.
+        return new Uint8Array(stream.buffer, 8);
       }
     }
     throw new Error("avcC, hvcC, vpcC, or av1C box not found");
   }
 
   #onSamples(track_id, ref, samples) {
-    // Generate and emit an EncodedVideoChunk for each demuxed sample.
     for (const sample of samples) {
       this.#onChunk(
         new EncodedVideoChunk({

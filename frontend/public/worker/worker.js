@@ -1,3 +1,4 @@
+import CanvasRenderer from "./canvasRenderer.js";
 import MP4Demuxer from "./mp4Demuxer.js";
 import VideoProcessor from "./videoProcessor.js";
 
@@ -16,7 +17,7 @@ const hdConstraints = {
   height: 720,
 };
 
-//codec VP9: https://www.youtube.com/redirect?event=video_description&redir_token=QUFFLUhqazg3ZkFhWW82QVRsRlNFN3dYYUg5NnhtbWNyd3xBQ3Jtc0trdkdCSnNOWVJlN1UzOGE0UkxIMkEtb19GWE1mSDZjUTlaOWlEaEpXQ0VXQnBxbVhKS0d6Y2lKY2wtWFF3a0pIZTJNdmhmR3pXUnNvbW9XdjZOcEFvaUlrRV9RcXVhYVI4clQ3SHhTNmNzNWg3OTRJTQ&q=https%3A%2F%2Fgithub.com%2Fw3c%2Fwebcodecs%2Fblob%2Fb0448b3f559a69509dd4011877c34866b05f806e%2Fsamples%2Fcapture-to-file%2Fencode-worker.js%23L31&v=_1K8dFdZhBg
+//codec VP9
 const encoderConfig = {
   ...qvgaConstraints,
   bitrate: 10e6,
@@ -37,8 +38,10 @@ const videoProcessor = new VideoProcessor({
 });
 
 onmessage = async ({ data }) => {
+  const renderFrame = new CanvasRenderer(data.canvas).getRenderer();
   await videoProcessor.start({
     file: data.files[0],
+    renderFrame: renderFrame,
     encoderConfig,
     sendMessage(message) {
       self.postMessage(message);

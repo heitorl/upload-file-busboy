@@ -46,17 +46,6 @@ class Routes {
     logger.info("Request finish with success!");
     // return onFinish(response, headers.origin);
   }
-
-  // async get(req, res) {
-  //   try {
-  //     const key =
-  //       "uploads/9478a738-2876-4c00-81a9-dd1cc462cd2f-videoplayback.mp4";
-  //     const data = await getS3Object(key);
-  //     res.sendFile(data);
-  //   } catch (err) {
-  //     res.status(500).json({ error: "Erro ao obter objeto do S3." });
-  //   }
-  // }
 }
 
 export default Routes;

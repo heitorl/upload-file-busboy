@@ -8,7 +8,6 @@ const worker = new Worker("worker/worker.js", {
 });
 
 worker.onload = () => worker.postMessage("Mensagem do app para o worker");
-// Agora que o Worker está pronto, você pode enviar mensagens para ele
 
 function formatBytes(bytes, decimals = 2) {
   if (bytes === 0) return "0 Bytes";
@@ -30,11 +29,19 @@ function updateStatus(size) {
 }
 const showSize = () => {
   const { files: fileElements } = document.getElementById("file");
+  const previewCanvas = document.getElementById("preview-144p");
   if (!fileElements.length) return;
 
   const files = Array.from(fileElements);
+  const canvas = previewCanvas.transferControlToOffscreen();
 
-  worker.postMessage({ files });
+  worker.postMessage(
+    {
+      files,
+      canvas,
+    },
+    [canvas]
+  );
 
   const { size } = files.reduce(
     (prev, next) => ({ size: prev.size + next.size }),
@@ -46,14 +53,6 @@ const showSize = () => {
   bytesAmount = size;
 
   updateStatus(size);
-
-  // const interval = setInterval(() => {
-  //   console.count();
-  //   const result = bytesAmount - 5e6;
-  //   bytesAmount = result < 0 ? 0 : result;
-  //   updateStatus(bytesAmount);
-  //   if (bytesAmount === 0) clearInterval(interval);
-  // }, 50);
 };
 
 const configureForm = (targetUrl) => {
@@ -81,11 +80,6 @@ const showMessage = () => {
 
 const onload = () => {
   showMessage();
-
-  // mp4box.onReady = function (info) {
-  //   console.log("Método onReady chamado");
-  //   console.log(info);
-  // };
 
   const ioClient = io.connect(API_URL, { withCredentials: false });
   ioClient.on("connect", (msg) => {
